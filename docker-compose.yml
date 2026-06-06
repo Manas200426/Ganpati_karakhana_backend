@@ -1,0 +1,37 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: ganpati-postgres
+    restart: always
+
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: ganpati_karkhana
+
+    ports:
+      - "5433:5432"
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  backend:
+    build: .
+
+    container_name: ganpati-backend
+
+    restart: always
+
+    depends_on:
+      - postgres
+
+    environment:
+      PORT: 8080
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/ganpati_karkhana
+      JWT_SECRET: supersecretkey
+
+    ports:
+      - "8080:8080"
+
+volumes:
+  postgres_data:

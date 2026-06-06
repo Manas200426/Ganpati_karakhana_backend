@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "MurtiItem" ALTER COLUMN "heightInches" SET DATA TYPE DOUBLE PRECISION;
