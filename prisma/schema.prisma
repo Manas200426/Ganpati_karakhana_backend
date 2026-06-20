@@ -16,16 +16,17 @@ enum OrderStatus {
 }
 
 model Workshop {
-  id        String   @id @default(uuid())
-  name      String
-  phone     String?
-  address   String?
+  id              String   @id @default(uuid())
+  name            String
+  phone           String?
+  whatsappNumber  String?
+  address         String?
 
-  admins    Admin[]
-  customers Customer[]
-  orders    Order[]
+  admins          Admin[]
+  customers       Customer[]
+  orders          Order[]
 
-  createdAt DateTime @default(now())
+  createdAt       DateTime @default(now())
 }
 
 model Admin {

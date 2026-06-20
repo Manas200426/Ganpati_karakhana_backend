@@ -19,7 +19,8 @@ async function main() {
   const workshop = await prisma.workshop.create({
     data: {
       name: "Kumbhar Ganpati Workshop",
-      phone: "9876543210",
+      phone: "9999999999",
+      whatsappNumber: "9324273637",
       address: "Pune",
     },
   });
@@ -57,7 +58,7 @@ async function main() {
     prisma.customer.create({
       data: {
         name: "Vikas More",
-        phone: "9876543213",
+        phone: "8828375432",
         address: "Chinchwad, Pune",
         workshopId: workshop.id,
       },

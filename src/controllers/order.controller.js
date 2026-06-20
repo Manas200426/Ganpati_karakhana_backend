@@ -5,6 +5,11 @@ const {
   updateOrderStatusService,
 } = require("../services/order.service");
 
+const { buildOrderConfirmationMessage } = require("../utils/whatsappMessageBuilder");
+const AppError = require("../utils/appError");
+const asyncHandler = require("../utils/asyncHandler");
+const prisma = require("../config/db");
+
 const createOrder = async (req, res) => {
   try {
     const order = await createOrderService(req.admin.id, req.body);
@@ -74,9 +79,54 @@ const updateOrderStatus = async (req, res) => {
   }
 };
 
+const getWhatsAppMessage = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  // Fetch order with all required relations
+  const order = await prisma.order.findUnique({
+    where: { id },
+    include: {
+      customer: true,
+      workshop: true,
+      murtiItems: true,
+      admin: true,
+    },
+  });
+
+  if (!order) {
+    throw new AppError("Order not found", 404);
+  }
+
+  // Verify the order belongs to the current admin's workshop
+  const admin = await prisma.admin.findUnique({
+    where: { id: req.admin.id },
+  });
+
+  if (order.workshopId !== admin.workshopId) {
+    throw new AppError("Unauthorized access to this order", 403);
+  }
+
+  // Check if customer has phone number
+  if (!order.customer.phone) {
+    throw new AppError("Customer phone number not available", 400);
+  }
+
+  // Generate message
+  const message = buildOrderConfirmationMessage(order);
+
+  res.status(200).json({
+    success: true,
+    data: {
+      customerPhone: order.customer.phone,
+      message,
+    },
+  });
+});
+
 module.exports = {
   createOrder,
   getOrders,
   getOrderById,
   updateOrderStatus,
+  getWhatsAppMessage,
 };

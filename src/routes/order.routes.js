@@ -9,6 +9,7 @@ const {
   getOrders,
   getOrderById,
   updateOrderStatus,
+  getWhatsAppMessage,
 } = require("../controllers/order.controller");
 
 const {
@@ -21,6 +22,8 @@ router.post("/", authMiddleware, validate(createOrderSchema), createOrder);
 router.get("/", authMiddleware, getOrders);
 
 router.get("/:id", authMiddleware, getOrderById);
+
+router.get("/:id/whatsapp-message", authMiddleware, getWhatsAppMessage);
 
 router.patch(
   "/:id/status",
