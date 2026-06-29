@@ -9,6 +9,8 @@ const authRoutes = require("./routes/auth.routes");
 const customerRoutes = require("./routes/customer.routes");
 const orderRoutes = require("./routes/order.routes");
 const dashboardRoutes = require("./routes/dashboard.routes");
+const testRoutes = require("./routes/test.routes")
+const photoRoutes = require("./routes/photo.routes");
 
 const errorMiddleware = require("./middlewares/error.middleware");
 
@@ -25,6 +27,9 @@ app.use("/api/auth", authRoutes);
 app.use("/api/customers", customerRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/test", testRoutes);
+app.use("/api/photos", photoRoutes);
+
 app.get("/health", (req, res) => {
   return res.status(200).json({
     status: "healthy",

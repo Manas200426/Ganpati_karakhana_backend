@@ -4,9 +4,13 @@ const createOrderRepo = async (data) => {
   return prisma.order.create({
     data,
     include: {
-      customer: true,
-      murtiItems: true,
+    customer: true,
+    murtiItems: {
+        include: {
+            photos: true,
+        },
     },
+}
   });
 };
 
@@ -18,7 +22,15 @@ const getOrdersRepo = async (workshopId) => {
 
     include: {
       customer: true,
-      murtiItems: true,
+      murtiItems: {
+  include: {
+    photos: {
+      orderBy: {
+        createdAt: "asc",
+      },
+    },
+  },
+},
     },
 
     orderBy: {
@@ -27,10 +39,7 @@ const getOrdersRepo = async (workshopId) => {
   });
 };
 
-const getOrderByIdRepo = async (
-  id,
-  workshopId
-) => {
+const getOrderByIdRepo = async (id, workshopId) => {
   return prisma.order.findFirst({
     where: {
       id,
@@ -39,16 +48,21 @@ const getOrderByIdRepo = async (
 
     include: {
       customer: true,
-      murtiItems: true,
+      murtiItems: {
+        include: {
+          photos: {
+            orderBy: {
+              createdAt: "asc",
+            },
+          },
+        },
+      },
       statusLogs: true,
     },
   });
 };
 
-const updateOrderStatusRepo = async (
-  orderId,
-  status
-) => {
+const updateOrderStatusRepo = async (orderId, status) => {
   return prisma.order.update({
     where: {
       id: orderId,
@@ -60,9 +74,7 @@ const updateOrderStatusRepo = async (
   });
 };
 
-const createStatusLogRepo = async (
-  data
-) => {
+const createStatusLogRepo = async (data) => {
   return prisma.statusLog.create({
     data,
   });

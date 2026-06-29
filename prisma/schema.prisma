@@ -104,6 +104,8 @@ model MurtiItem {
   clayType             String?
 
   specialInstructions  String?
+  
+  photos MurtiPhoto[]
 
   order                Order @relation(fields: [orderId], references: [id])
 
@@ -125,4 +127,18 @@ model StatusLog {
   admin          Admin       @relation(fields: [adminId], references: [id])
 
   changedAt      DateTime @default(now())
+}
+model MurtiPhoto {
+  id           String   @id @default(uuid())
+
+  murtiItemId  String
+
+  imageUrl     String
+  publicId     String
+
+  isPrimary    Boolean  @default(false)
+
+  createdAt    DateTime @default(now())
+
+  murtiItem    MurtiItem @relation(fields: [murtiItemId], references: [id], onDelete: Cascade)
 }
