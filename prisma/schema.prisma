@@ -15,18 +15,24 @@ enum OrderStatus {
   DELIVERED
 }
 
+enum AdminRole {
+  OWNER
+  ADMIN
+  STAFF
+}
+
 model Workshop {
-  id              String   @id @default(uuid())
-  name            String
-  phone           String?
-  whatsappNumber  String?
-  address         String?
+  id             String   @id @default(uuid())
+  name           String
+  phone          String?
+  whatsappNumber String?
+  address        String?
 
-  admins          Admin[]
-  customers       Customer[]
-  orders          Order[]
+  admins         Admin[]
+  customers      Customer[]
+  orders         Order[]
 
-  createdAt       DateTime @default(now())
+  createdAt      DateTime @default(now())
 }
 
 model Admin {
@@ -37,8 +43,8 @@ model Admin {
   email        String   @unique
   passwordHash String
 
-  role         String   @default("ADMIN")
-  isActive     Boolean  @default(true)
+  role         AdminRole @default(ADMIN)
+  isActive     Boolean   @default(true)
 
   workshop     Workshop @relation(fields: [workshopId], references: [id])
 
@@ -46,10 +52,12 @@ model Admin {
   statusLogs   StatusLog[]
 
   createdAt    DateTime @default(now())
+
+  @@index([workshopId])
 }
 
 model Customer {
-  id          String   @id @default(uuid())
+  id          String @id @default(uuid())
   workshopId  String
 
   name        String
@@ -61,84 +69,102 @@ model Customer {
   orders      Order[]
 
   createdAt   DateTime @default(now())
+
+  @@unique([workshopId, phone])
+  @@index([workshopId])
 }
 
 model Order {
-  id                 String        @id @default(uuid())
+  id                String @id @default(uuid())
 
-  workshopId         String
-  customerId         String
-  adminId            String
+  workshopId        String
+  customerId        String
+  adminId           String
 
-  billNo             String        @unique
+  billNo            String
 
-  totalPrice         Decimal       @db.Decimal(10, 2)
-  advancePaid        Decimal       @db.Decimal(10, 2)
+  totalPrice        Decimal @db.Decimal(10, 2)
+  advancePaid       Decimal @db.Decimal(10, 2)
 
-  status             OrderStatus   @default(PENDING)
+  status            OrderStatus @default(PENDING)
 
-  notes              String?
+  notes             String?
 
-  expectedDelivery   DateTime?
+  expectedDelivery  DateTime?
 
-  workshop           Workshop      @relation(fields: [workshopId], references: [id])
-  customer           Customer      @relation(fields: [customerId], references: [id])
-  admin              Admin         @relation(fields: [adminId], references: [id])
+  workshop          Workshop @relation(fields: [workshopId], references: [id])
+  customer          Customer @relation(fields: [customerId], references: [id])
+  admin             Admin @relation(fields: [adminId], references: [id])
 
-  murtiItems         MurtiItem[]
-  statusLogs         StatusLog[]
+  murtiItems        MurtiItem[]
+  statusLogs        StatusLog[]
 
-  createdAt          DateTime      @default(now())
+  createdAt         DateTime @default(now())
+
+  @@unique([workshopId, billNo])
+
+  @@index([workshopId])
+  @@index([customerId])
+  @@index([adminId])
+  @@index([status])
 }
 
 model MurtiItem {
-  id                   String   @id @default(uuid())
+  id                  String @id @default(uuid())
 
-  orderId              String
+  orderId             String
 
-  murtiName            String
-  murtiType            String?
+  murtiName           String
+  murtiType           String?
 
-  heightInches         Float?
+  heightInches        Float?
 
-  clayType             String?
+  clayType            String?
 
-  specialInstructions  String?
-  
-  photos MurtiPhoto[]
+  specialInstructions String?
 
-  order                Order @relation(fields: [orderId], references: [id])
+  photos              MurtiPhoto[]
 
-  createdAt            DateTime @default(now())
+  order               Order @relation(fields: [orderId], references: [id])
+
+  createdAt           DateTime @default(now())
+
+  @@index([orderId])
 }
 
 model StatusLog {
-  id             String      @id @default(uuid())
+  id            String @id @default(uuid())
 
-  orderId        String
-  adminId        String
+  orderId       String
+  adminId       String
 
-  oldStatus      OrderStatus
-  newStatus      OrderStatus
+  oldStatus     OrderStatus
+  newStatus     OrderStatus
 
-  notes          String?
+  notes         String?
 
-  order          Order       @relation(fields: [orderId], references: [id])
-  admin          Admin       @relation(fields: [adminId], references: [id])
+  order         Order @relation(fields: [orderId], references: [id])
+  admin         Admin @relation(fields: [adminId], references: [id])
 
-  changedAt      DateTime @default(now())
+  changedAt     DateTime @default(now())
+
+  @@index([orderId])
+  @@index([adminId])
 }
+
 model MurtiPhoto {
-  id           String   @id @default(uuid())
+  id           String @id @default(uuid())
 
   murtiItemId  String
 
   imageUrl     String
   publicId     String
 
-  isPrimary    Boolean  @default(false)
+  isPrimary    Boolean @default(false)
 
   createdAt    DateTime @default(now())
 
   murtiItem    MurtiItem @relation(fields: [murtiItemId], references: [id], onDelete: Cascade)
+
+  @@index([murtiItemId])
 }

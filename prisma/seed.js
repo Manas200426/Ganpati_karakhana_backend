@@ -5,7 +5,7 @@ const prisma = new PrismaClient();
 
 async function main() {
   // Prevent duplicate seeding
-  const existingAdmin = await prisma.admin.findUnique({
+  const existingAdmin = await prisma.admin.findFirst({
     where: {
       email: "admin@test.com",
     },
