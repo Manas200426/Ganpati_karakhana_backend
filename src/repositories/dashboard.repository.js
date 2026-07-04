@@ -64,6 +64,15 @@ const getDashboardStatsRepo = async (workshopId) => {
 
       include: {
         customer: true,
+        murtiItems: {
+          include: {
+            photos: {
+              orderBy: {
+                createdAt: "asc",
+              },
+            },
+          },
+        },
       },
 
       orderBy: {
