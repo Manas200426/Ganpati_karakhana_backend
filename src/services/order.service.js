@@ -6,6 +6,8 @@ const {
   getOrdersRepo,
   getOrderByIdRepo,
   updateOrderStatusRepo,
+  updateOrderRepo,
+  updateMurtiItemRepo,
   createStatusLogRepo,
 } = require("../repositories/order.repository");
 
@@ -141,9 +143,66 @@ const updateOrderStatusService =
     return updatedOrder;
   };
 
+const updateOrderService = async (adminId, orderId, data) => {
+  const admin = await prisma.admin.findUnique({
+    where: {
+      id: adminId,
+    },
+  });
+
+  if (!admin) {
+    throw new AppError("Admin not found");
+  }
+
+  const order = await getOrderByIdRepo(orderId, admin.workshopId);
+
+  if (!order) {
+    throw new AppError("Order not found");
+  }
+
+  if (data.customerId) {
+    const customer = await prisma.customer.findFirst({
+      where: {
+        id: data.customerId,
+        workshopId: admin.workshopId,
+      },
+    });
+
+    if (!customer) {
+      throw new AppError("Customer not found in your workshop");
+    }
+  }
+
+  if (data.murtiItems && data.murtiItems.length > 0) {
+    const existingMurtiItemIds = order.murtiItems.map((item) => item.id);
+
+    for (const murtiItem of data.murtiItems) {
+      if (!existingMurtiItemIds.includes(murtiItem.id)) {
+        throw new AppError("Murti item not found in this order");
+      }
+    }
+
+    for (const { id, ...murtiItemData } of data.murtiItems) {
+      await updateMurtiItemRepo(id, murtiItemData);
+    }
+  }
+
+  const updatedOrder = await updateOrderRepo(orderId, {
+    customerId: data.customerId,
+    billNo: data.billNo,
+    totalPrice: data.totalPrice,
+    advancePaid: data.advancePaid,
+    notes: data.notes,
+    expectedDelivery: data.expectedDelivery,
+  });
+
+  return updatedOrder;
+};
+
 module.exports = {
   createOrderService,
   getOrdersService,
   getOrderByIdService,
   updateOrderStatusService,
+  updateOrderService,
 };

@@ -74,6 +74,48 @@ const updateOrderStatusRepo = async (orderId, status) => {
   });
 };
 
+const updateOrderRepo = async (orderId, data) => {
+  return prisma.order.update({
+    where: {
+      id: orderId,
+    },
+
+    data,
+
+    include: {
+      customer: true,
+      murtiItems: {
+        include: {
+          photos: {
+            orderBy: {
+              createdAt: "asc",
+            },
+          },
+        },
+      },
+      statusLogs: true,
+    },
+  });
+};
+
+const updateMurtiItemRepo = async (murtiItemId, data) => {
+  return prisma.murtiItem.update({
+    where: {
+      id: murtiItemId,
+    },
+
+    data,
+
+    include: {
+      photos: {
+        orderBy: {
+          createdAt: "asc",
+        },
+      },
+    },
+  });
+};
+
 const createStatusLogRepo = async (data) => {
   return prisma.statusLog.create({
     data,
@@ -85,5 +127,7 @@ module.exports = {
   getOrdersRepo,
   getOrderByIdRepo,
   updateOrderStatusRepo,
+  updateOrderRepo,
+  updateMurtiItemRepo,
   createStatusLogRepo,
 };

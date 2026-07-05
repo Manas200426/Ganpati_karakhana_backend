@@ -9,12 +9,14 @@ const {
   getOrders,
   getOrderById,
   updateOrderStatus,
+  updateOrder,
   getWhatsAppMessage,
 } = require("../controllers/order.controller");
 
 const {
   createOrderSchema,
   updateOrderStatusSchema,
+  updateOrderSchema,
 } = require("../validators/order.validator");
 
 router.post("/", authMiddleware, validate(createOrderSchema), createOrder);
@@ -30,6 +32,13 @@ router.patch(
   authMiddleware,
   validate(updateOrderStatusSchema),
   updateOrderStatus,
+);
+
+router.put(
+  "/:id",
+  authMiddleware,
+  validate(updateOrderSchema),
+  updateOrder,
 );
 
 module.exports = router;

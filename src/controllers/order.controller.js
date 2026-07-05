@@ -3,6 +3,7 @@ const {
   getOrdersService,
   getOrderByIdService,
   updateOrderStatusService,
+  updateOrderService,
 } = require("../services/order.service");
 
 const { buildOrderConfirmationMessage } = require("../utils/whatsappMessageBuilder");
@@ -79,6 +80,26 @@ const updateOrderStatus = async (req, res) => {
   }
 };
 
+const updateOrder = async (req, res) => {
+  try {
+    const updatedOrder = await updateOrderService(
+      req.admin.id,
+      req.params.id,
+      req.body,
+    );
+
+    res.status(200).json({
+      success: true,
+      data: updatedOrder,
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 const getWhatsAppMessage = asyncHandler(async (req, res) => {
   const { id } = req.params;
 
@@ -128,5 +149,6 @@ module.exports = {
   getOrders,
   getOrderById,
   updateOrderStatus,
+  updateOrder,
   getWhatsAppMessage,
 };

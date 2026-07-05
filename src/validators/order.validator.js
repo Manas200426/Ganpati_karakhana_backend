@@ -34,7 +34,38 @@ const updateOrderStatusSchema = z.object({
   notes: z.string().optional(),
 });
 
+const updateMurtiItemSchema = z.object({
+  id: z.string().uuid("Invalid murti item"),
+
+  murtiName: z.string().min(1, "Murti name is required").optional(),
+
+  murtiType: z.string().optional(),
+
+  heightInches: z.coerce.number().min(1, "Height must be at least 1 inch").max(50, "Height seems too large").optional(),
+
+  clayType: z.string().optional(),
+
+  specialInstructions: z.string().optional(),
+});
+
+const updateOrderSchema = z.object({
+  customerId: z.string().uuid("Invalid customer").optional(),
+
+  billNo: z.string().min(1, "Bill number required").optional(),
+
+  totalPrice: z.number().min(1, "Price must be greater than 0").optional(),
+
+  advancePaid: z.number().min(0, "Advance cannot be negative").optional(),
+
+  notes: z.string().optional(),
+
+  expectedDelivery: z.string().optional(),
+
+  murtiItems: z.array(updateMurtiItemSchema).optional(),
+});
+
 module.exports = {
   createOrderSchema,
   updateOrderStatusSchema,
+  updateOrderSchema,
 };
