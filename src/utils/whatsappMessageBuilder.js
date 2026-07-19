@@ -27,7 +27,7 @@ const buildOrderConfirmationMessage = (order) => {
     })
     .join("\n");
 
-  const message = `🙏 Ganpati Booking Confirmed 🙏
+  const message = `🙏 Ganpati Booking Confirmed at ${workshop.name || ""}🙏
 
 Dear ${customer.name || "Valued Customer"},
 
@@ -46,7 +46,6 @@ Balance Amount: ₹${balanceAmount.toFixed(2)}
 
 For any queries, contact us:
 ${workshop.name || ""}
-WhatsApp: ${workshop.whatsappNumber ? `+${workshop.whatsappNumber}` : "Contact us"}
 ${workshop.phone ? `Phone: ${workshop.phone}` : ""}
 
 Thank you for choosing us! 🙏`;

@@ -41,9 +41,60 @@ const updateCustomerRepo = async (
   });
 };
 
+const getCustomerOrdersWithPhotosRepo = async (
+  customerId
+) => {
+  return prisma.order.findMany({
+    where: {
+      customerId,
+    },
+    include: {
+      murtiItems: {
+        include: {
+          photos: true,
+        },
+      },
+    },
+  });
+};
+
+const deleteCustomerCascadeRepo = async (
+  customerId,
+  orderIds
+) => {
+  return prisma.$transaction([
+    prisma.statusLog.deleteMany({
+      where: {
+        orderId: {
+          in: orderIds,
+        },
+      },
+    }),
+    prisma.murtiItem.deleteMany({
+      where: {
+        orderId: {
+          in: orderIds,
+        },
+      },
+    }),
+    prisma.order.deleteMany({
+      where: {
+        customerId,
+      },
+    }),
+    prisma.customer.delete({
+      where: {
+        id: customerId,
+      },
+    }),
+  ]);
+};
+
 module.exports = {
   createCustomerRepo,
   getCustomersRepo,
   getCustomerByIdRepo,
   updateCustomerRepo,
+  getCustomerOrdersWithPhotosRepo,
+  deleteCustomerCascadeRepo,
 };

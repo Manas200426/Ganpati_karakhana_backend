@@ -10,6 +10,7 @@ const {
   getCustomers,
   getCustomerById,
   updateCustomer,
+  deleteCustomer,
 } = require("../controllers/customer.controller");
 const {
   createCustomerSchema,
@@ -23,5 +24,7 @@ router.get("/", authMiddleware, getCustomers);
 router.get("/:id", authMiddleware, getCustomerById);
 
 router.put("/:id", authMiddleware,validate(updateCustomerSchema), updateCustomer);
+
+router.delete("/:id", authMiddleware, deleteCustomer);
 
 module.exports = router;

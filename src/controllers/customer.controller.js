@@ -3,6 +3,7 @@ const {
   getCustomersService,
   getCustomerByIdService,
   updateCustomerService,
+  deleteCustomerService,
 } = require("../services/customer.service");
 
 const createCustomer = async (req, res) => {
@@ -91,9 +92,32 @@ const updateCustomer = async (
   }
 };
 
+const deleteCustomer = async (
+  req,
+  res
+) => {
+  try {
+    await deleteCustomerService(
+      req.admin.id,
+      req.params.id
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "Customer deleted successfully",
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 module.exports = {
   createCustomer,
   getCustomers,
   getCustomerById,
   updateCustomer,
+  deleteCustomer,
 };

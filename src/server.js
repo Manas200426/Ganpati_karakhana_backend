@@ -11,6 +11,7 @@ const orderRoutes = require("./routes/order.routes");
 const dashboardRoutes = require("./routes/dashboard.routes");
 const testRoutes = require("./routes/test.routes")
 const photoRoutes = require("./routes/photo.routes");
+const workshopRoutes = require("./routes/workshop.routes");
 
 const errorMiddleware = require("./middlewares/error.middleware");
 
@@ -29,6 +30,7 @@ app.use("/api/orders", orderRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/test", testRoutes);
 app.use("/api/photos", photoRoutes);
+app.use("/api/workshops", workshopRoutes);
 
 app.get("/health", (req, res) => {
   return res.status(200).json({

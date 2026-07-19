@@ -6,7 +6,10 @@ const {
   getCustomersRepo,
   getCustomerByIdRepo,
   updateCustomerRepo,
+  getCustomerOrdersWithPhotosRepo,
+  deleteCustomerCascadeRepo,
 } = require("../repositories/customer.repository");
+const { deleteImage } = require("./cloudinary.service");
 
 const createCustomerService = async (
   adminId,
@@ -88,9 +91,47 @@ const updateCustomerService = async (
   return updateCustomerRepo(customerId, data);
 };
 
+const deleteCustomerService = async (
+  adminId,
+  customerId
+) => {
+  const admin = await prisma.admin.findUnique({
+    where: {
+      id: adminId,
+    },
+  });
+
+  const existingCustomer =
+    await getCustomerByIdRepo(
+      customerId,
+      admin.workshopId
+    );
+
+  if (!existingCustomer) {
+    throw new AppError("Customer not found");
+  }
+
+  const orders = await getCustomerOrdersWithPhotosRepo(
+    customerId
+  );
+
+  const photos = orders.flatMap((order) =>
+    order.murtiItems.flatMap((item) => item.photos)
+  );
+
+  await Promise.all(
+    photos.map((photo) => deleteImage(photo.publicId))
+  );
+
+  const orderIds = orders.map((order) => order.id);
+
+  return deleteCustomerCascadeRepo(customerId, orderIds);
+};
+
 module.exports = {
   createCustomerService,
   getCustomersService,
   getCustomerByIdService,
   updateCustomerService,
+  deleteCustomerService,
 };
